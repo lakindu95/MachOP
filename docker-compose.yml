@@ -1,0 +1,25 @@
+version: "3.7"
+services:
+  web:
+    container_name: machop-web
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "uvicorn app.server.app:app --host 0.0.0.0 --port 5100 --reload"
+    volumes:
+      - .:/code
+    ports:
+      - 5100:5100
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: machop-mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - db-data:/data/db
+
+volumes:
+  db-data:
