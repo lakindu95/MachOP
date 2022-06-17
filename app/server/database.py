@@ -1,6 +1,7 @@
 import motor.motor_asyncio
 from bson.objectid import ObjectId
 from decouple import config
+from datetime import datetime
 
 MONGO_DETAILS = config("MONGO_DETAILS")  # read environment variable
 
@@ -17,14 +18,14 @@ feed_collection = database.get_collection("feeds_collection")
 def feed_helper(feed) -> dict:
     return {
         "id": str(feed["_id"]),
-        "machinename": feed["machinename"],
-        "email": feed["email"],
-        "description": feed["description"],
-        "isHeaterOn": feed["isHeaterOn"],
-        "oxygenLevel": feed["oxygenLevel"],
-        "humidityLevel": feed["humidityLevel"],
+        "machine_name": feed["machine_name"],
+        "sensor_id": feed["sensor_id"],
+        "is_heater_on": feed["is_heater_on"],
+        "oxygen_level": feed["oxygen_level"],
+        "humidity_level": feed["humidity_level"],
         "temperature": feed["temperature"],
-        "moistureLevel": feed["moistureLevel"]
+        "moisture_level": feed["moisture_level"],
+        "start_date": feed["start_date"]
     }
 
 
@@ -37,6 +38,13 @@ async def retrieve_sensor_feeds():
     async for feed in feed_collection.find():
         sensor_feeds.append(feed_helper(feed))
     return sensor_feeds
+
+# Retrieve all machine feeds present in the database by start date
+async def retrieve_sensor_feeds_by_start_date(start_date: datetime) :
+    sensor_feeds_by_start_date = []
+    async for feed in feed_collection.find({"start_date": start_date}):
+        sensor_feeds_by_start_date.append(feed_helper(feed))
+    return sensor_feeds_by_start_date
 
 
 # Add a new feeds into to the database

@@ -1,55 +1,77 @@
-from typing import Optional
+from datetime import datetime
+from typing import Optional, Union
 
 from pydantic import BaseModel, EmailStr, Field
 
+# class UserModel(BaseModel):
+#     username: str = Field(...)
+#     email: EmailStr = Field(...)
+#     full_name: str = Field(...)
+#     disabled: bool = Field(...)
 
+class UserModel(BaseModel):
+    username: str
+    email: Union[str, None] = None
+    full_name: Union[str, None] = None
+    disabled: Union[bool, None] = None
+
+class UserInDB(UserModel):
+    hashed_password: str
+
+class TokenModel(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Union[str, None] = None
+    
 class MachOPSchema(BaseModel):
-    machinename: str = Field(...)
-    email: EmailStr = Field(...)
-    description: str = Field(...)
-    isHeaterOn: bool = Field(...)
-    oxygenLevel: int = Field(..., gt=0, lt=9)
-    humidityLevel: float = Field(...)
+    machine_name: str = Field(...)
+    sensor_id: int = Field(...)
+    is_heater_on: bool = Field(...)
+    oxygen_level: int = Field(..., gt=0, lt=9)
+    humidity_level: float = Field(...)
     temperature: float = Field(...)
-    moistureLevel: float = Field(...)
+    moisture_level: float = Field(...)
+    start_date: datetime = Field(...) 
 
     class Config:
         schema_extra = {
             "example": {
-                "machinename": "John Doe",
-                "email": "jdoe@x.edu.ng",
-                "description": "Water resources engineering",
-                "isHeaterOn": "true",
-                "oxygenLevel": 2,
-                "humidityLevel": "3.0",
+                "machine_name": "Biowaste_Process_1",
+                "sensor_id": 13223,
+                "is_heater_on": "true",
+                "oxygen_level": 2,
+                "humidity_level": "3.0",
                 "temperature": "36.7",
-                "moistureLevel": "10"
-            }
+                "moisture_level": "10",
+                "start_date": '2022-06-16T22:31:18.130822+00:00'    
+                }
         }
 
 
 class UpdateMachOPModel(BaseModel):
-    machinename: Optional[str]
-    email: Optional[EmailStr]
-    description: Optional[str]
-    isHeaterOn: Optional[bool]
-    oxygenLevel: Optional[int]
-    humidityLevel: Optional[float]
+    machine_name: Optional[str]
+    sensor_id: Optional[int]
+    is_heater_on: Optional[bool]
+    oxygen_level: Optional[int]
+    humidity_level: Optional[float]
     temperature: Optional[float]
-    moistureLevel: Optional[float]
+    moisture_level: Optional[float]
+    start_date: Optional[datetime]
 
 
     class Config:
         schema_extra = {
             "example": {
-                "machinename": "Biowaste_Process_1",
-                "email": "jdoe@x.edu.ng",
-                "description": "Water resources and environmental engineering",
-                "isHeaterOn": "true",
-                "oxygenLevel": 4,
-                "humidityLevel": "4.0",
+                "machine_name": "Biowaste_Process_1",
+                "sensor_id": 13223,
+                "is_heater_on": "true",
+                "oxygen_level": 4,
+                "humidity_level": "4.0",
                 "temperature": "36.7",
-                "moistureLevel": "10"
+                "moisture_level": "10",
+                "start_date": '2022-06-16T22:31:18.130822+00:00'
             }
         }
 

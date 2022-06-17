@@ -1,10 +1,10 @@
-<h1 align="center">
+<p align="center">
   <a href="https://github.com/lakindu95/MachOP"><img src="./app/assets/readme-logo.png"></a>
-</h1>
+</p>
+
 <h2 align="center">
 MachOP
 </h2>
-<hr>
 
 <h4 align="center">
 Sample CRUD Python, Flask, Mongo &amp; Dockerized Project
@@ -20,6 +20,7 @@ Sample CRUD Python, Flask, Mongo &amp; Dockerized Project
 ```
 $ export PYTHONPATH=$PWD
 $ pip install -r requirements.txt
+$ python app/main.py 
 
 ```
 

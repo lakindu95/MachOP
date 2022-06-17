@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.security import OAuth2PasswordBearer
 
 from app.server.routes.feed import router as FeedRouter
 
