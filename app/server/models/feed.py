@@ -1,39 +1,19 @@
 from datetime import datetime
 from typing import Optional, Union
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, validator
+from datetime import datetime, timezone
 
-# class UserModel(BaseModel):
-#     username: str = Field(...)
-#     email: EmailStr = Field(...)
-#     full_name: str = Field(...)
-#     disabled: bool = Field(...)
 
-class UserModel(BaseModel):
-    username: str
-    email: Union[str, None] = None
-    full_name: Union[str, None] = None
-    disabled: Union[bool, None] = None
-
-class UserInDB(UserModel):
-    hashed_password: str
-
-class TokenModel(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: Union[str, None] = None
-    
-class MachOPSchema(BaseModel):
-    machine_name: str = Field(...)
-    sensor_id: int = Field(...)
-    is_heater_on: bool = Field(...)
-    oxygen_level: int = Field(..., gt=0, lt=9)
-    humidity_level: float = Field(...)
-    temperature: float = Field(...)
-    moisture_level: float = Field(...)
-    start_date: datetime = Field(...) 
+class FeedModel(BaseModel):
+    machine_name: Union[str, None] = None
+    sensor_id: Union[int, None] = None
+    is_heater_on: Union[bool, None] = None
+    oxygen_level: Union[int, None] = None
+    humidity_level: Union[float, None] = None
+    temperature: Union[float, None] = None
+    moisture_level: Union[float, None] = None
+    start_date: Union[datetime, None] = None
 
     class Config:
         schema_extra = {
@@ -45,12 +25,12 @@ class MachOPSchema(BaseModel):
                 "humidity_level": "3.0",
                 "temperature": "36.7",
                 "moisture_level": "10",
-                "start_date": '2022-06-16T22:31:18.130822+00:00'    
+                "start_date": '2022-06-11T22:31:18.130822+00:00'
                 }
         }
 
 
-class UpdateMachOPModel(BaseModel):
+class UpdateFeedModel(BaseModel):
     machine_name: Optional[str]
     sensor_id: Optional[int]
     is_heater_on: Optional[bool]
@@ -74,15 +54,3 @@ class UpdateMachOPModel(BaseModel):
                 "start_date": '2022-06-16T22:31:18.130822+00:00'
             }
         }
-
-
-def ResponseModel(data, message):
-    return {
-        "data": [data],
-        "code": 200,
-        "message": message,
-    }
-
-
-def ErrorResponseModel(error, code, message):
-    return {"error": error, "code": code, "message": message}

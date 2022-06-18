@@ -2,19 +2,19 @@ import motor.motor_asyncio
 from bson.objectid import ObjectId
 from decouple import config
 from datetime import datetime
+import logging
 
-MONGO_DETAILS = config("MONGO_DETAILS")  # read environment variable
+MONGO_DETAILS = config("MONGO_DETAILS")
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
+logger = logging.getLogger("uvicorn.error")
 
 database = client.MachOP
 
 feed_collection = database.get_collection("feeds_collection")
-
+user_machine_collection = database.get_collection("user_machine_collection")
 
 # helpers
-
-
 def feed_helper(feed) -> dict:
     return {
         "id": str(feed["_id"]),
@@ -28,6 +28,16 @@ def feed_helper(feed) -> dict:
         "start_date": feed["start_date"]
     }
 
+def machine_user_helper(machine_user) -> dict:
+    return {
+        "id": str(machine_user["_id"]),
+        "username": machine_user["username"],
+        "machine_name": machine_user["machine_name"],
+        "machine_id": machine_user["machine_id"],
+        "disabled": machine_user["disabled"],
+        "hashed_password": machine_user["hashed_password"]
+    }
+
 
 # crud operations
 
@@ -39,12 +49,23 @@ async def retrieve_sensor_feeds():
         sensor_feeds.append(feed_helper(feed))
     return sensor_feeds
 
-# Retrieve all machine feeds present in the database by start date
+
+# Retrieve all machine feeds by start date
 async def retrieve_sensor_feeds_by_start_date(start_date: datetime) :
     sensor_feeds_by_start_date = []
     async for feed in feed_collection.find({"start_date": start_date}):
         sensor_feeds_by_start_date.append(feed_helper(feed))
     return sensor_feeds_by_start_date
+
+
+# Retreive all machine feeds by sensor ID
+async def retrieve_sensor_feed_by_sensor_id(sensor_id: int) :
+    logger.error(sensor_id)
+    sensor_feeds_by_sensor_id = []
+    async for feed in feed_collection.find({"sensor_id": int(sensor_id)}):
+        logger.error(feed)
+        sensor_feeds_by_sensor_id.append(feed_helper(feed))
+    return sensor_feeds_by_sensor_id
 
 
 # Add a new feeds into to the database
@@ -54,16 +75,8 @@ async def add_sensor_feed(feed_data: dict) -> dict:
     return feed_helper(new_feed)
 
 
-# Retrieve a feed with a matching ID
-async def retrieve_sensor_feed(id: str) -> dict:
-    feed = await feed_collection.find_one({"_id": ObjectId(id)})
-    if feed:
-        return feed_helper(feed)
-
-
 # Update a feed with a matching ID
 async def update_sensor_feed(id: str, data: dict):
-    # Return false if an empty request body is sent.
     if len(data) < 1:
         return False
     feed = await feed_collection.find_one({"_id": ObjectId(id)})
@@ -82,3 +95,17 @@ async def delete_sensor_feed(id: str):
     if feed:
         await feed_collection.delete_one({"_id": ObjectId(id)})
         return True
+
+
+# Add Machine user data
+async def add_machine_user(user_data: dict) -> dict:
+    machine_user = await user_machine_collection.insert_one(user_data)
+    new_machine_user = await user_machine_collection.find_one({"_id": machine_user.inserted_id})
+    return machine_user_helper(new_machine_user)
+
+
+# Retrieve a machine user with a matching ID
+async def retrieve_machine_user(username: str) -> dict:
+    machine_user = await user_machine_collection.find_one({"username": username})
+    if machine_user:
+        return machine_user_helper(machine_user)
