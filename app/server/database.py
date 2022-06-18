@@ -35,10 +35,18 @@ def machine_user_helper(machine_user) -> dict:
         "username": machine_user["username"],
         "machine_name": machine_user["machine_name"],
         "machine_id": machine_user["machine_id"],
-        "disabled": machine_user["disabled"],
-        "hashed_password": machine_user["hashed_password"]
+        "disabled": machine_user["disabled"]
     }
 
+def machine_user_helper_db(machine_user) -> dict:
+    return {
+        "id": str(machine_user["_id"]),
+        "username": machine_user["username"],
+        "machine_name": machine_user["machine_name"],
+        "machine_id": machine_user["machine_id"],
+        "disabled": machine_user["disabled"],
+       "hashed_password": machine_user["hashed_password"]
+    }
 
 # crud operations
 
@@ -109,4 +117,4 @@ async def add_machine_user(user_data: dict) -> dict:
 async def retrieve_machine_user(username: str) -> dict:
     machine_user = await user_machine_collection.find_one({"username": username})
     if machine_user:
-        return machine_user_helper(machine_user)
+        return machine_user_helper_db(machine_user)
