@@ -19,6 +19,7 @@ def feed_helper(feed) -> dict:
     return {
         "id": str(feed["_id"]),
         "machine_name": feed["machine_name"],
+        "machine_id": feed["machine_id"],
         "sensor_id": feed["sensor_id"],
         "is_heater_on": feed["is_heater_on"],
         "oxygen_level": feed["oxygen_level"],
